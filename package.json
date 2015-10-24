@@ -7,11 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "debug": "*",
-    "koa": "^1.1.0",
     "bluebird": "^2.10.0",
+    "debug": "*",
+    "kcors": "^1.0.0",
+    "koa": "^1.1.0",
     "koa-route": "^2.4.0",
-    "koa-bodyparser": "^2.0.0",
     "rdio": "^3.1.0"
   },
   "author": "Travis Jeffery",
