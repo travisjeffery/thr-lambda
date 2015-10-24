@@ -8,10 +8,11 @@ var Rdio = require('rdio')({
 });
 var cors = require('kcors');
 var Promise = require('bluebird');
+var route = require('koa-route');
 
 var rdio = new Rdio();
 Promise.promisifyAll(rdio);
-var route = require('koa-route');
+
 var app = koa();
 app.use(cors());
 app.use(function *(next) {
@@ -22,7 +23,6 @@ app.use(function *(next) {
     this.body = e.message;
   }
 });
-
 app.use(route.get('/:name', get));
 
 function *get(username) {
