@@ -1,7 +1,5 @@
 'use strict';
 
-var debug = require('debug')('thr');
-var koa = require('koa');
 var config = require('./config');
 var Rdio = require('rdio')({
   rdio: config
@@ -22,8 +20,10 @@ function handler(event, context) {
       if (err) return context.fail(err);
       rdio.request({ method: 'getHeavyRotation', user: res.result.key }, false, function (err, res) {
         if (err) return context.fail(err);
-        context.success(res.result);
+        context.succeed(res.result);
       });
     });
   });
 };
+
+exports.handler = handler;
