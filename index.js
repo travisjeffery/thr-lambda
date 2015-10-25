@@ -6,38 +6,24 @@ var config = require('./config');
 var Rdio = require('rdio')({
   rdio: config
 });
-var cors = require('kcors');
-var Promise = require('bluebird');
-var route = require('koa-route');
-
 var rdio = new Rdio();
-Promise.promisifyAll(rdio);
 
-var app = koa();
-app.use(cors());
-app.use(function *(next) {
-  try {
-    yield next;
-  } catch (e) {
-    this.status = e.status || 500;
-    this.body = e.message;
+function handler(event, context) {
+  var username = event.username;
+
+  if (!username) {
+    var error = new Error('Username needs to be passed in.');
+    return context.fail(error)
   }
-});
-app.use(route.get('/:name', get));
 
-function *get(username) {
-  if (!username) this.throw('Username needs to be passed in.', 403)
-
-  var res = null;
-  res = yield rdio.requestAsync({ method: 'findUser', vanityName: username }, false);
-  res = yield rdio.requestAsync({ method: 'getHeavyRotation', user: res.result.key }, false);
-  this.body = res.result;
-};
-
-rdio.getClientToken(function (err) {
-  if (err) throw err;
-
-  app.listen(3000, function () {
-    console.log('listening at 3000');
+  rdio.getClientToken(function (err) {
+    if (err) return context.fail(err);
+    rdio.request({ method: 'findUser', vanityName: username }, false, function (err, res) {
+      if (err) return context.fail(err);
+      rdio.request({ method: 'getHeavyRotation', user: res.result.key }, false, function (err, res) {
+        if (err) return context.fail(err);
+        context.success(res.result);
+      });
+    });
   });
-})
+};
